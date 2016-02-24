@@ -1,6 +1,5 @@
 'use strict'
 
-const UnionSchema = require('./UnionSchema')
 const isObject = require('./nodash').isObject
 
 class ArraySchema {
@@ -13,12 +12,7 @@ class ArraySchema {
       throw new Error('ArraySchema requires item schema to be an object.')
     }
 
-    if (options.schemaAttribute) {
-      const schemaAttribute = options.schemaAttribute
-      this._itemSchema = new UnionSchema(itemSchema, { schemaAttribute })
-    } else {
-      this._itemSchema = itemSchema
-    }
+    this._itemSchema = itemSchema
   }
 
   getItemSchema () {

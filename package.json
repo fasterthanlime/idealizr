@@ -35,7 +35,6 @@
     "lint": "standard src/**.js test/**.js"
   },
   "devDependencies": {
-    "deep-assign": "^2.0.0",
     "standard": "^6.0.7",
     "tape": "^4.4.0"
   },

@@ -2,55 +2,52 @@
 
 const EntitySchema = require('./EntitySchema')
 const IterableSchema = require('./IterableSchema')
-const UnionSchema = require('./UnionSchema')
 
-const mapValues = require('./nodash').mapValues
 const isEqual = require('./nodash').isEqual
 const isObject = require('./nodash').isObject
 
-function defaultAssignEntity (normalized, key, entity) {
-  normalized[key] = entity
-}
-
 function visitObject (obj, schema, bag, options) {
-  const assignEntity = options.assignEntity || defaultAssignEntity
-
   let normalized = {}
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
-      const entity = visit(obj[key], schema[key], bag, options)
-      assignEntity(normalized, key, entity)
+      const itemSchema = schema[key]
+      const result = visit(obj[key], itemSchema, bag, options)
+
+      if (itemSchema instanceof EntitySchema) {
+        normalized[key + '_id'] = result
+      } else if (itemSchema instanceof IterableSchema && Array.isArray(result)) {
+        normalized[key.replace(/s$/, '') + '_ids'] = result
+      } else {
+        normalized[key] = result
+      }
     }
   }
   return normalized
 }
 
-function defaultMapper (iterableSchema, itemSchema, bag, options) {
-  return (obj) => visit(obj, itemSchema, bag, options)
-}
-
-function polymorphicMapper (iterableSchema, itemSchema, bag, options) {
-  return (obj) => {
-    const schemaKey = iterableSchema.getSchemaKey(obj)
-    const result = visit(obj, itemSchema[schemaKey], bag, options)
-    return { id: result, schema: schemaKey }
-  }
-}
-
 function visitIterable (obj, iterableSchema, bag, options) {
   const itemSchema = iterableSchema.getItemSchema()
-  const curriedItemMapper = defaultMapper(iterableSchema, itemSchema, bag, options)
+  const f = (obj) => visit(obj, itemSchema, bag, options)
 
   if (Array.isArray(obj)) {
-    return obj.map(curriedItemMapper)
+    return obj.map(f)
   } else {
-    return mapValues(obj, curriedItemMapper)
-  }
-}
+    let normalized = {}
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const result = f(obj[key])
 
-function visitUnion (obj, unionSchema, bag, options) {
-  const itemSchema = unionSchema.getItemSchema()
-  return polymorphicMapper(unionSchema, itemSchema, bag, options)(obj)
+        if (itemSchema instanceof EntitySchema) {
+          normalized[key + '_id'] = result
+        } else if (itemSchema instanceof IterableSchema && Array.isArray(result)) {
+          normalized[key.replace(/s$/, '') + '_ids'] = result
+        } else {
+          normalized[key] = result
+        }
+      }
+    }
+    return normalized
+  }
 }
 
 function defaultMergeIntoEntity (entityA, entityB, entityKey) {
@@ -72,7 +69,7 @@ function defaultMergeIntoEntity (entityA, entityB, entityKey) {
 }
 
 function visitEntity (entity, entitySchema, bag, options) {
-  const mergeIntoEntity = options.mergeIntoEntity || defaultMergeIntoEntity
+  const mergeIntoEntity = defaultMergeIntoEntity
 
   const entityKey = entitySchema.getKey()
   const id = entitySchema.getId(entity)
@@ -101,8 +98,6 @@ function visit (obj, schema, bag, options) {
     return visitEntity(obj, schema, bag, options)
   } else if (schema instanceof IterableSchema) {
     return visitIterable(obj, schema, bag, options)
-  } else if (schema instanceof UnionSchema) {
-    return visitUnion(obj, schema, bag, options)
   } else {
     return visitObject(obj, schema, bag, options)
   }
@@ -114,10 +109,6 @@ function arrayOf (schema, options) {
 
 function valuesOf (schema, options) {
   return new IterableSchema(schema, options)
-}
-
-function unionOf (schema, options) {
-  return new UnionSchema(schema, options)
 }
 
 function normalize (obj, schema, options) {
@@ -146,6 +137,5 @@ module.exports = {
   Schema: EntitySchema,
   arrayOf,
   valuesOf,
-  unionOf,
   normalize
 }
