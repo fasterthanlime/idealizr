@@ -1,6 +1,6 @@
 # idealizr
 
-[![build status](https://travis-ci.org/fasterthanlime/idealizr)](https://travis-ci.org/fasterthanlime/idealizr)
+[![Build Status](https://travis-ci.org/fasterthanlime/idealizr.svg?branch=master)](https://travis-ci.org/fasterthanlime/idealizr)
 
 normalizr normalizes deeply nested JSON API responses according to a schema for [Flux](https://facebook.github.io/flux) and [Redux](http://rackt.github.io/redux) apps.  
 Kudos to Jing Chen for suggesting this approach.
