@@ -13,7 +13,7 @@ class EntitySchema {
     this._key = key
 
     const idAttribute = options.idAttribute || 'id'
-    this._getId = typeof idAttribute === 'function' ? idAttribute : x => x[idAttribute]
+    this._getId = typeof idAttribute === 'function' ? idAttribute : (x) => x[idAttribute]
     this._idAttribute = idAttribute
   }
 

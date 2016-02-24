@@ -15,7 +15,7 @@ class UnionSchema {
     this._itemSchema = itemSchema
 
     const schemaAttribute = options.schemaAttribute
-    this._getSchema = typeof schemaAttribute === 'function' ? schemaAttribute : x => x[schemaAttribute]
+    this._getSchema = typeof schemaAttribute === 'function' ? schemaAttribute : (x) => x[schemaAttribute]
   }
 
   getItemSchema () {
