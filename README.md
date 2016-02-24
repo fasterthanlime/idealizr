@@ -1,23 +1,18 @@
-# normalizr [![build status](https://img.shields.io/travis/gaearon/normalizr/master.svg?style=flat-square)](https://travis-ci.org/gaearon/normalizr) [![npm version](https://img.shields.io/npm/v/normalizr.svg?style=flat-square)](https://www.npmjs.com/package/normalizr) [![npm downloads](https://img.shields.io/npm/dm/normalizr.svg?style=flat-square)](https://www.npmjs.com/package/normalizr)
+# idealizr
 
-Normalizes deeply nested JSON API responses according to a schema for [Flux](https://facebook.github.io/flux) and [Redux](http://rackt.github.io/redux) apps.  
+[![build status](https://travis-ci.org/fasterthanlime/idealizr)](https://travis-ci.org/fasterthanlime/idealizr)
+
+normalizr normalizes deeply nested JSON API responses according to a schema for [Flux](https://facebook.github.io/flux) and [Redux](http://rackt.github.io/redux) apps.  
 Kudos to Jing Chen for suggesting this approach.
+
+idealizr is a fork of [normalizr](https://github.com/gaearon/normalizr) which uses the `_id` or `_ids` suffix when
+normalizing data.
 
 ## Installation
 
 ```
-npm install --save normalizr
+npm install --save idealizr
 ```
-
-## Sample App
-
-### Flux
-
-See **[flux-react-router-example](https://github.com/gaearon/flux-react-router-example)**.
-
-### Redux
-
-See **[redux/examples/real-world](https://github.com/rackt/redux/tree/master/examples/real-world)**.
 
 ## The Problem
 
@@ -57,12 +52,12 @@ can be normalized to
       1: {
         id: 1,
         title: 'Some Article',
-        author: 1
+        author_id: 1
       },
       2: {
         id: 2,
         title: 'Other Article',
-        author: 1
+        author_id: 1
       }
     },
     users: {
@@ -87,7 +82,7 @@ Note the flat structure (all nesting is gone).
 ## Usage
 
 ```javascript
-import { normalize, Schema, arrayOf } from 'normalizr';
+import { normalize, Schema, arrayOf } from 'idealizr';
 ```
 
 First, define a schema for our entities:
@@ -120,10 +115,10 @@ const ServerActionCreators = {
   // We can use the schema objects defined earlier to express both of them:
 
   receiveArticles(response) {
-  
+
     // Passing { articles: arrayOf(article) } as second parameter to normalize()
     // lets it correctly traverse the response tree and gather all entities:
-    
+
     // BEFORE
     // {
     //   articles: [{
@@ -143,7 +138,7 @@ const ServerActionCreators = {
     //   },
     //   entities: {
     //     articles: {
-    //       1: { author: 7, ... }, // <--- Same happens for references to other entities in the schema
+    //       1: { author_id: 7, ... }, // <--- Same happens for references to other entities in the schema
     //       2: { ... },
     //       ...
     //     },
@@ -152,7 +147,7 @@ const ServerActionCreators = {
     //       ..
     //     }
     //   }
-    
+
     response = normalize(response, {
       articles: arrayOf(article)
     });
@@ -162,7 +157,7 @@ const ServerActionCreators = {
       response
     });
   },
-  
+
   // Though this is a different API endpoint, we can describe it just as well
   // with our normalizr schema objects:
 
@@ -170,7 +165,7 @@ const ServerActionCreators = {
 
     // Passing { users: arrayOf(user) } as second parameter to normalize()
     // lets it correctly traverse the response tree and gather all entities:
-    
+
     // BEFORE
     // {
     //   users: [{
@@ -191,7 +186,7 @@ const ServerActionCreators = {
     //       ..
     //     }
     //   }
-    
+
 
     response = normalize(response, {
       users: arrayOf(user)
@@ -485,7 +480,7 @@ Normalizr solves the problem by converting API responses to a flat form where ne
   entities: {
     articles: {
       12: {
-        authorId: 3,
+        author_id: 3,
         likers: [2, 1, 4],
         primaryCollection: 12,
         collections: [12, 11]
@@ -501,7 +496,7 @@ Normalizr solves the problem by converting API responses to a flat form where ne
     },
     collections: {
       12: {
-        curator: 2,
+        curator_id: 2,
         name: 'Stuff'
       },
       ...
@@ -513,7 +508,7 @@ Normalizr solves the problem by converting API responses to a flat form where ne
 Then `UserStore` code can be rewritten as:
 
 ```javascript
-// With normalizr, users are always in action.entities.users
+// With idealizr, users are always in action.entities.users
 
 AppDispatcher.register((payload) => {
   const { action } = payload;
@@ -538,7 +533,7 @@ The minimal supported IE version is IE 9.
 ## Running Tests
 
 ```
-git clone https://github.com/gaearon/normalizr.git
+git clone https://github.com/fasterthanlime/idealizr.git
 cd normalizr
 npm install
 npm test # run tests once
