@@ -1,26 +1,30 @@
-import isObject from 'lodash/isObject';
+'use strict'
 
-export default class UnionSchema {
-  constructor(itemSchema, options) {
+const isObject = require('./nodash').isObject
+
+class UnionSchema {
+  constructor (itemSchema, options) {
     if (!isObject(itemSchema)) {
-      throw new Error('UnionSchema requires item schema to be an object.');
+      throw new Error('UnionSchema requires item schema to be an object.')
     }
 
     if (!options || !options.schemaAttribute) {
-      throw new Error('UnionSchema requires schemaAttribute option.');
+      throw new Error('UnionSchema requires schemaAttribute option.')
     }
 
-    this._itemSchema = itemSchema;
+    this._itemSchema = itemSchema
 
-    const schemaAttribute = options.schemaAttribute;
-    this._getSchema = typeof schemaAttribute === 'function' ? schemaAttribute : x => x[schemaAttribute];
+    const schemaAttribute = options.schemaAttribute
+    this._getSchema = typeof schemaAttribute === 'function' ? schemaAttribute : x => x[schemaAttribute]
   }
 
-  getItemSchema() {
-    return this._itemSchema;
+  getItemSchema () {
+    return this._itemSchema
   }
 
-  getSchemaKey(item) {
-    return this._getSchema(item);
+  getSchemaKey (item) {
+    return this._getSchema(item)
   }
 }
+
+module.exports = UnionSchema

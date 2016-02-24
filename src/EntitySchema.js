@@ -1,33 +1,41 @@
-export default class EntitySchema {
-  constructor(key, options = {}) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('A string non-empty key is required');
+'use strict'
+
+class EntitySchema {
+  constructor (key, options) {
+    if (!options) {
+      options = {}
     }
 
-    this._key = key;
+    if (!key || typeof key !== 'string') {
+      throw new Error('A string non-empty key is required')
+    }
 
-    const idAttribute = options.idAttribute || 'id';
-    this._getId = typeof idAttribute === 'function' ? idAttribute : x => x[idAttribute];
-    this._idAttribute = idAttribute;
+    this._key = key
+
+    const idAttribute = options.idAttribute || 'id'
+    this._getId = typeof idAttribute === 'function' ? idAttribute : x => x[idAttribute]
+    this._idAttribute = idAttribute
   }
 
-  getKey() {
-    return this._key;
+  getKey () {
+    return this._key
   }
 
-  getId(entity) {
-    return this._getId(entity);
+  getId (entity) {
+    return this._getId(entity)
   }
 
-  getIdAttribute() {
-    return this._idAttribute;
+  getIdAttribute () {
+    return this._idAttribute
   }
 
-  define(nestedSchema) {
+  define (nestedSchema) {
     for (let key in nestedSchema) {
       if (nestedSchema.hasOwnProperty(key)) {
-        this[key] = nestedSchema[key];
+        this[key] = nestedSchema[key]
       }
     }
   }
 }
+
+module.exports = EntitySchema

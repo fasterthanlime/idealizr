@@ -20,7 +20,7 @@ npm install --save idealizr
 * You want to port your app to [Flux](https://github.com/facebook/flux) or [Redux](http://rackt.github.io/redux);
 * You noticed [it's hard](https://groups.google.com/forum/#!topic/reactjs/jbh50-GJxpg) for Stores (or Reducers) to consume data from nested API responses.  
 
-Normalizr takes JSON and a schema and **replaces nested entities with their IDs, gathering all entities in dictionaries**.
+Idealizr takes JSON and a schema and **replaces nested entities with their IDs, gathering all entities in dictionaries**.
 
 For example,
 
@@ -159,7 +159,7 @@ const ServerActionCreators = {
   },
 
   // Though this is a different API endpoint, we can describe it just as well
-  // with our normalizr schema objects:
+  // with our idealizr schema objects:
 
   receiveUsers(response) {
 
@@ -521,20 +521,11 @@ AppDispatcher.register((payload) => {
 });
 ```
 
-## Dependencies
-
-* Some methods from `lodash`, such as `isObject`, `isEqual` and `mapValues`
-
-## Browser Support
-
-Modern browsers with ES5 environments are supported.  
-The minimal supported IE version is IE 9.
-
 ## Running Tests
 
 ```
 git clone https://github.com/fasterthanlime/idealizr.git
-cd normalizr
+cd idealizr
 npm install
 npm test # run tests once
 npm run test:watch # run test watcher
