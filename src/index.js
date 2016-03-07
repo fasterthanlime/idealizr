@@ -41,8 +41,6 @@ function visitIterable (obj, iterableSchema, bag, options) {
           normalized[key + '_id'] = result
         } else if (itemSchema instanceof IterableSchema && Array.isArray(result)) {
           normalized[key.replace(/s$/, '') + '_ids'] = result
-        } else {
-          normalized[key] = result
         }
       }
     }
@@ -51,11 +49,7 @@ function visitIterable (obj, iterableSchema, bag, options) {
 }
 
 function defaultMergeIntoEntity (entityA, entityB, entityKey) {
-  for (let key in entityB) {
-    if (!entityB.hasOwnProperty(key)) {
-      continue
-    }
-
+  for (let key of Object.keys(entityB)) {
     if (!entityA.hasOwnProperty(key) || isEqual(entityA[key], entityB[key])) {
       entityA[key] = entityB[key]
       continue

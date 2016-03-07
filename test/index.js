@@ -14,6 +14,13 @@ test('fails creating nameless schema', function (t) {
   t.end()
 })
 
+test('fails creating specless iterable schema', function (t) {
+  t.throws(function () {
+    arrayOf()
+  })
+  t.end()
+})
+
 test('fails creating entity with non-string name', function (t) {
   t.throws(function () {
     new Schema(42) // eslint-disable-line no-new
