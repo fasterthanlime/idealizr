@@ -8,9 +8,6 @@
 **Disclaimer: this library is tailor-made for another project. No attempt will be made
 to spin it into its own project / PRs with new features will be ignored.**
 
-normalizr normalizes deeply nested JSON API responses according to a schema for [Flux](https://facebook.github.io/flux) and [Redux](http://rackt.github.io/redux) apps.  
-Kudos to Jing Chen for suggesting this approach.
-
 idealizr is a fork of [normalizr](https://github.com/gaearon/normalizr) which uses the `_id` or `_ids` suffix when
 normalizing data.
 
