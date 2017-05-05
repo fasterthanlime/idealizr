@@ -1,8 +1,8 @@
 {
   "name": "idealizr",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Normalizes JSON according to a schema",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/fasterthanlime/idealizr.git"
@@ -31,18 +31,20 @@
   },
   "homepage": "https://github.com/fasterthanlime/idealizr",
   "scripts": {
-    "test": "npm run tape && npm run lint",
-    "tape": "node test/index.js | tap-difflet",
-    "lint": "standard src/**.js test/**.js",
+    "prepublish": "npm run compile",
+    "compile": "tsc",
+    "test": "npm run compile && npm run tape && npm run lint",
+    "lint": "tslint ./src/*.ts",
+    "tape": "node test/index.js",
     "cov": "nyc -s npm run tape && nyc report -r text",
     "coveralls": "npm run cov && nyc report -r text-lcov | coveralls"
   },
   "devDependencies": {
     "coveralls": "^2.11.8",
     "nyc": "^6.0.0",
-    "standard": "^6.0.7",
-    "tap-difflet": "^0.4.0",
-    "tape": "^4.4.0"
+    "tape": "^4.4.0",
+    "tslint": "^5.2.0",
+    "typescript": "^2.2.2"
   },
   "dependencies": {
     "deep-equal": "^1.0.1"

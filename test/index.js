@@ -1,7 +1,8 @@
 'use strict'
 
 const test = require('tape')
-const normalizr = require('../src')
+const normalizr = require('..')
+const transform = normalizr.transform
 const normalize = normalizr.normalize
 const Schema = normalizr.Schema
 const arrayOf = normalizr.arrayOf
@@ -501,6 +502,119 @@ test('can normalize deeply nested entities with maps', function (t) {
   t.end()
 })
 
+test('can normalize deeply nested entities with a transformer', function (t) {
+  const article = new Schema('articles')
+  const user = new Schema('users')
+
+  article.define({
+    collaborators: valuesOf(arrayOf(user))
+  })
+
+  user.define({
+    born_at: transform((x) => new Date(x)),
+  });
+
+  const feedSchema = {
+    feed: arrayOf(article),
+    suggestions: valuesOf(arrayOf(article))
+  }
+
+  const input = {
+    feed: [{
+      id: 1,
+      title: 'Some Article',
+      collaborators: {
+        authors: [{
+          id: 3,
+          name: 'Mike Persson',
+          born_at: "1982-04-21T04:31"
+        }],
+        reviewers: [{
+          id: 2,
+          name: 'Pete Hunt',
+          born_at: "1982-04-21T04:12"
+        }]
+      }
+    }, {
+      id: 2,
+      title: 'Other Article',
+      collaborators: {
+        authors: [{
+          id: 2,
+          name: 'Pete Hunt',
+          born_at: "1982-04-21T04:12"
+        }]
+      }
+    }, {
+      id: 3,
+      title: 'Last Article'
+    }],
+    suggestions: {
+      1: [{
+        id: 2,
+        title: 'Other Article',
+        collaborators: {
+          authors: [{
+            id: 2,
+            name: 'Pete Hunt',
+            born_at: "1982-04-21T04:12"
+          }]
+        }
+      }, {
+        id: 3,
+        title: 'Last Article'
+      }]
+    }
+  }
+
+  Object.freeze(input)
+
+  t.same(normalize(input, feedSchema), {
+    result: {
+      feed_ids: [1, 2, 3],
+      suggestions: {
+        '1_ids': [2, 3]
+      }
+    },
+    entities: {
+      articles: {
+        1: {
+          id: 1,
+          title: 'Some Article',
+          collaborators: {
+            author_ids: [3],
+            reviewer_ids: [2]
+          }
+        },
+        2: {
+          id: 2,
+          title: 'Other Article',
+          collaborators: {
+            author_ids: [2]
+          }
+        },
+        3: {
+          id: 3,
+          title: 'Last Article'
+        }
+      },
+      users: {
+        2: {
+          id: 2,
+          name: 'Pete Hunt',
+          born_at: new Date("1982-04-21T04:12"),
+        },
+        3: {
+          id: 3,
+          name: 'Mike Persson',
+          born_at: new Date("1982-04-21T04:31")
+        }
+      }
+    }
+  })
+  t.end()
+})
+
 test('can normalize mutually recursive entities', function (t) {
   const article = new Schema('articles')
   const user = new Schema('users')
@@ -641,6 +755,53 @@ test('can normalize self-recursive entities', function (t) {
         4: {
           id: 4,
           name: 'Pete Hunt'
+        }
+      }
+    }
+  })
+  t.end()
+})
+
+test('uses provided key transformer', function (t) {
+  const writer = new Schema('respectedWriters')
+  writer.define({
+    parent: writer
+  })
+
+  const input = {
+    id: 1,
+    full_birth_name: 'Andy Warhol',
+    parent: {
+      id: 7,
+      full_birth_name: 'Tom Dale',
+      parent: {
+        id: 4,
+        full_birth_name: 'Pete Hunt'
+      }
+    }
+  }
+
+  Object.freeze(input)
+
+  t.same(normalize(input, writer, {
+    keyTransformer: (x) => x.replace(/_[a-z]/g, (c) => c.substr(1).toUpperCase()),
+  }), {
+    result: 1,
+    entities: {
+      respectedWriters: {
+        1: {
+          id: 1,
+          fullBirthName: 'Andy Warhol',
+          parentId: 7
+        },
+        7: {
+          id: 7,
+          fullBirthName: 'Tom Dale',
+          parentId: 4
+        },
+        4: {
+          id: 4,
+          fullBirthName: 'Pete Hunt'
         }
       }
     }
