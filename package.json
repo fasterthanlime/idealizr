@@ -1,8 +1,9 @@
 {
   "name": "idealizr",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Normalizes JSON according to a schema",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/fasterthanlime/idealizr.git"
