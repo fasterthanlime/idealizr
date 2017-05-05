@@ -4,6 +4,8 @@ import EntitySchema, {IEntitySchemaOptions} from "./EntitySchema";
 import IterableSchema from "./IterableSchema";
 import TransformerSchema, {ITransformer} from "./TransformerSchema";
 
+export type ISchema = ISchema;
+
 import {isEqual, isObject} from "./nodash";
 
 function visitObject(obj: any, schema: ISchema, bag: IBag, opts: IVisitOptions) {
