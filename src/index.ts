@@ -113,7 +113,7 @@ export function transform(transformer: ITransformer) {
   return new TransformerSchema(transformer);
 }
 
-export function normalize(obj: IVisitable, schema: ISchema, userOptions: IVisitOptions = {}) {
+export function normalize(obj: IVisitable, schema: ISchema, userOptions: IVisitOptions = {}): INormalized {
   const opts = {
     ...userOptions,
   };
@@ -136,6 +136,15 @@ export function normalize(obj: IVisitable, schema: ISchema, userOptions: IVisitO
     entities: bag,
     result,
   };
+}
+
+export interface INormalized {
+  entities: {
+    [schemaName: string]: {
+      [id: string]: any;
+    };
+  };
+  result: any;
 }
 
 export type IVisitable = {
